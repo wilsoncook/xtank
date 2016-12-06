@@ -1,0 +1,163 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+    "http://www.w3.org/TR/html4/strict.dtd"
+    >
+<html lang="en">
+<head>
+    <title>My first game</title>
+</head>
+<body>
+    <div style="margin: 0 auto; width: 600px; height: 500px;">
+	<canvas id="main" width="600" height="500"></canvas>
+	<div id="fpsShower"></div>
+    </div>
+</body>
+</html>
+<script type="text/javascript" src="core/function.js"></script>
+<script type="text/javascript" src="core/LighterGame.js"></script>
+
+<script type="text/javascript" src="display/Menu.js"></script>
+
+<script type="text/javascript" src="display/Tank.js"></script>
+<script type="text/javascript" src="display/Obstacle.js"></script>
+<script type="text/javascript" src="display/Bullet.js"></script>
+<script type="text/javascript" src="display/Material.js"></script>
+<script type="text/javascript" src="display/Symbol.js"></script>
+<script type="text/javascript">
+//-----------------------Some defines & objects---------------------------------
+//TODO
+//---------------------------Game start here------------------------------------
+
+//---[*].make obstacles
+/*
+var obstacles = [];
+for(var i = 2; i < 10; i++){
+    for(var j = 2; j < 10; j++){
+	if(j % 2 == 1){
+	    obstacles.push(new Wall(30 * j, 30 * i));
+	}else{
+	    obstacles.push(new Steel(30 * j, 30 * i));
+	}
+    }
+}
+game.addSprite(obstacles);
+*/
+
+//---[*].make symbol
+//var symbol = new Symbol();
+//game.addSprite(symbol);
+
+//---[*].make player
+/*
+var player = new PlayerTank(0, 0, {hp: 3});
+//player.position = new Vector2(symbol.position.x - player.width, game.height - player.height);
+player.position = new Vector2(player.width, game.height - player.height);
+//bind key event to player(!!!注意,此处由于存在对PlayerTank的引用,所以即使玩家死亡,但一样可以控制发炮和方向,即使用了闭包!!!)
+document.addEventListener('keydown', (function(player){ return function(e){player.onKeyDown(e)}; })(player));
+document.addEventListener('keyup', (function(player){ return function(e){player.onKeyUp(e)}; })(player));
+//document.addEventListener('keypress', function(e){player.onKeyUp(e)});
+//join
+game.addSprite(player);
+player = null;
+*/
+//---[*].make enemy
+/*
+game.addSprite([new EnemyTankLevel1(400, 0),
+		new EnemyTankLevel1(400, 100),
+		new EnemyTankLevel1(400, 200),
+		new EnemyTankLevel1(400, 350)]);*/
+var testMap = {
+    material: [
+	{
+	    "class": "Star", //[CONFIG]
+	    "maxQuantity": 3 //[CONFIG]how many materials will show on one-time at most
+	},
+	{
+	    "class": "Peach",
+	    "maxQuantity": 3
+	},
+	{
+	    "class": "Smaller",
+	    "maxQuantity": 3
+	}
+	//TODO
+    ],
+    enemy: {
+	"maxQuantity": 4, //[CONFIG]the number of tanks that are intend to kept in show in one-time at most
+	"bornPlace": [ //the places where the enemies will born
+	    "0, 10", //[CONFIG]
+	    "200, 10", //[CONFIG]
+	    "400, 10" //[CONFIG]
+	],
+	"enemies": [
+	    {
+		"class": "EnemyTankLevel1", //[CONFIG]
+		"targetQuantity": 10 //[CONFIG]how many tanks are intended to generated
+	    },
+	    {
+		"class": "EnemyTankLevel2", //[CONFIG]
+		"targetQuantity": 10 //[CONFIG]how many tanks are intended to generated
+	    }
+	]
+    },
+    obstacle: [
+	{
+	    "class": "Wall",
+	    "place": [
+		"0, 10",
+		"0, 60"
+	    ]
+	},
+	{
+	    "class": "Steel",
+	    "place": [
+		"30, 10",
+		"30, 60"
+	    ]
+	}
+    ],
+    symbol: "0, 300",
+    player:[
+	{
+	    "position": "20, 100", //[CONFIG]where to place a player
+	    "option":{
+		"hp": 3,
+		"keyMapping": {
+		    "left": KEY_LEFT, //[CONFIG]
+		    "up": KEY_UP, //[CONFIG]
+		    "right": KEY_RIGHT, //[CONFIG]
+		    "down": KEY_DOWN, //[CONFIG]
+		    "fire": KEY_SPACE //[CONFIG]
+		}
+	    }
+	},
+	{
+	    "position": "20, 200", //[CONFIG]where to place a player
+	    "option":{
+		"hp": 3,
+		"keyMapping": {
+		    "left": KEY_A, //[CONFIG]
+		    "up": KEY_W, //[CONFIG]
+		    "right": KEY_D, //[CONFIG]
+		    "down": KEY_S, //[CONFIG]
+		    "fire": KEY_J //[CONFIG]
+		}
+	    }
+	}
+    ]
+}
+//document.write(JSON.stringify(testMap));
+var testMapString = '{"material":[{"class":"Star","maxQuantity":3},{"class":"Peach","maxQuantity":3},{"class":"Smaller","maxQuantity":3}],"enemy":{"maxQuantity":4,"bornPlace":["0, 10","200, 10","400, 10"],"enemies":[{"class":"EnemyTankLevel1","targetQuantity":10},{"class":"EnemyTankLevel2","targetQuantity":10}]},"obstacle":[{"class":"Wall","place":["0, 10","0, 60"]},{"class":"Steel","place":["30, 10","30, 60"]}],"symbol":"0, 300","player":[{"position":"20, 100","option":{"hp":3,"keyMapping":{"left":37,"up":38,"right":39,"down":40,"fire":32}}},{"position":"20, 200","option":{"hp":3,"keyMapping":{"left":65,"up":87,"right":68,"down":83,"fire":74}}}]}';
+//---[FINAL].check resource loaded & start game
+var loadTimer = setInterval(function(){
+    if(ImageManager.isLoadedAll()){
+	clearInterval(loadTimer);
+	//Main codes here...
+	var mainCanvas = document.getElementById("main");
+	//---[*].Show game menu
+	new Menu(mainCanvas).start();
+	//---[*].make game
+	//var game = new Stage(document.getElementById('main'));
+	//game.start(60, document.getElementById('fpsShower'));
+    }
+}, 20);
+</script>

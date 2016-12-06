@@ -1,0 +1,63 @@
+<html>
+<head>
+    <title>Test Client</title>
+</head>
+<body>
+    <div id="clientbox"></div>
+</body>
+</html>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  var socket = io.connect('http://localhost');
+  socket.on('news', function (data) {
+    console.log(data);
+    socket.emit('my other event', { my: 'data' });
+  });
+</script>
+<script type="text/javascript">
+//使用socket.io的尝试
+/*
+var socket = io.connect('http://localhost', function() {
+	console.log('Connected to the server');
+});
+socket.on('news', function(data) {
+	console.log(data);
+	socket.emit('my other event', { my: 'data' });
+});
+*/
+
+/*纯websocket的尝试
+var socket;
+function connect() {
+	try {
+		var host = "localhost", port = 1337;
+		socket = new WebSocket("ws://" + host + ":" + port);
+		message('Socket Status: ' + socket.readyState);
+		socket.onopen = function() {
+			message('Socket Status: ' + socket.readyState + '(Open)');
+			socket.send("Call Server");
+		}
+		socket.onmessage = function(msg) {
+			message('Received: ' + msg.data);
+		}
+		socket.onclose = function() {
+			message('Socket Status: ' + socket.readyState + ' (Closed)');;
+		}
+	} catch (e) {
+		message(e);
+	}
+}
+function send() {
+	try {
+		socket.send('I will say hello to server!');
+	} catch (e) {
+		message(e);
+	}
+}
+function message(msg){
+	console.log(msg);
+}
+connect();
+//send();
+*/
+</script>
